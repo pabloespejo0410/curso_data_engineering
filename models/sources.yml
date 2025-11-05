@@ -1,56 +1,54 @@
 version: 2
 
 sources:
-
-  - name: SQL_SERVER_DBO # name of the source 
-    schema: SQL_SERVER_DBO # this is the schema our raw data lives in
-    database: ALUMNO24_DEV_BRONZE_DB # this is the name of our database
-
-    quoting:
-      database: false
-      schema: false
-      identifier: false
-
+  - name: SQL_SERVER_DBO 
+    # --- Configuración de ubicación ---
+    database: ALUMNO24_DEV_BRONZE_DB 
+    schema: SQL_SERVER_DBO 
+    # --- Opcional: Documentación y tests ---
+    description: >
+      Esta es la capa BRONZE de datos extraídos del servidor SQL.
+    
+    # --- Opcional: Configuración de frescura (freshness) ---
+    loaded_at_field: _etl_loaded_timestamp # Campo para verificar cuándo se cargó
     freshness:
       warn_after: {count: 1000, period: day}
       error_after: {count: 1000, period: day}
+      
 
     tables:
+      - name: ADDRESSES # Nombre de la tabla
+        description: Contiene información de direcciones de origen.
+        loaded_at_field: _FIVETRAN_SYNCED # Aseguramos el campo de frescura a nivel de tabla
 
-      - name: ADDRESSES
-        loaded_at_field: _fivetran_synced
         columns:
-          - name: ADDRESS_ID
+          - name: ADDRESS_ID # CLAVE PRIMARIA
+            description: Identificador único de la dirección. Es la clave primaria de la tabla.
+            data_tests:
+              - unique     # Debe ser único.
+              - not_null   # No debe ser nulo (porque es Primary Key).
+              
           - name: ZIPCODE
+            description: Código postal asociado a la dirección.
+            data_tests:
+              - not_null   # Aseguramos que el código postal esté presente.
+              
           - name: COUNTRY
+            description: País donde se localiza la dirección.
+            
           - name: ADDRESS
-          - name: STATE
-          - name: _fivetran_DELETED
-          - name: _fivetran_synced
+            description: La línea principal de la dirección física.
 
-      - name: EVENTS
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: EVENT_ID
-          - name: PAGE_URL
-          - name: EVENT_TYPE
-          - name: USER_ID
-          - name: PRODUCT_ID
-          - name: SESSION_ID
-          - name: CREATED_AT
-          - name: ORDER_ID
-          - name: _fivetran_DELETED
-          - name: _fivetran_synced
-      - name: EVENTS
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: EVENT_ID
-          - name: PAGE_URL
-          - name: EVENT_TYPE
-          - name: USER_ID
-          - name: PRODUCT_ID
-          - name: SESSION_ID
-          - name: CREATED_AT
-          - name: ORDER_ID
-          - name: _fivetran_DELETED
-          - name: _fivetran_synced
+          - name: STATE
+            description: Estado o provincia de la dirección.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera booleana que indica si el registro fue eliminado en el sistema de origen.
+            data_tests:
+              - accepted_values: # Aseguramos que solo contenga TRUE o FALSE
+                  values: [True, False, null] # Permitimos null si el origen lo permite
+
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran.
+            data_tests:
+              - not_null 
