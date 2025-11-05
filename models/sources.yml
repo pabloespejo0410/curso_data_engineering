@@ -2,8 +2,8 @@ version: 2
 
 sources:
 
-  - name: google_sheets # name of the source 
-    schema: google_sheets # this is the schema our raw data lives in
+  - name: SQL_SERVER_DBO # name of the source 
+    schema: SQL_SERVER_DBO # this is the schema our raw data lives in
     database: ALUMNO24_DEV_BRONZE_DB # this is the name of our database
 
     quoting:
@@ -17,11 +17,40 @@ sources:
 
     tables:
 
-      - name: budget
+      - name: ADDRESSES
         loaded_at_field: _fivetran_synced
         columns:
-          - name: _row
-          - name: product_id
-          - name: quantity
-          - name: month
+          - name: ADDRESS_ID
+          - name: ZIPCODE
+          - name: COUNTRY
+          - name: ADDRESS
+          - name: STATE
+          - name: _fivetran_DELETED
+          - name: _fivetran_synced
+
+      - name: EVENTS
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: EVENT_ID
+          - name: PAGE_URL
+          - name: EVENT_TYPE
+          - name: USER_ID
+          - name: PRODUCT_ID
+          - name: SESSION_ID
+          - name: CREATED_AT
+          - name: ORDER_ID
+          - name: _fivetran_DELETED
+          - name: _fivetran_synced
+      - name: EVENTS
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: EVENT_ID
+          - name: PAGE_URL
+          - name: EVENT_TYPE
+          - name: USER_ID
+          - name: PRODUCT_ID
+          - name: SESSION_ID
+          - name: CREATED_AT
+          - name: ORDER_ID
+          - name: _fivetran_DELETED
           - name: _fivetran_synced
