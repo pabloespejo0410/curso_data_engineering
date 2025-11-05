@@ -2,14 +2,14 @@ version: 2
 
 sources:
   - name: SQL_SERVER_DBO 
-    # --- Configuración de ubicación ---
+    # Configuración de ubicación 
     database: ALUMNO24_DEV_BRONZE_DB 
     schema: SQL_SERVER_DBO 
-    # --- Opcional: Documentación y tests ---
+    # Documentación y tests 
     description: >
       Esta es la capa BRONZE de datos extraídos del servidor SQL.
     
-    # --- Opcional: Configuración de frescura (freshness) ---
+    # Configuración de freshness
     loaded_at_field: _etl_loaded_timestamp # Campo para verificar cuándo se cargó
     freshness:
       warn_after: {count: 1000, period: day}
