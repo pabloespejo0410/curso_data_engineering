@@ -82,3 +82,50 @@ sources:
             data_tests:
               - not_null
 
+# 4. Usuarios
+      - name: USERS
+        description: Información detallada de los usuarios o clientes.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: USER_ID
+            description: Clave primaria de negocio del usuario.
+            tests:
+              - unique
+              - not_null
+              
+          - name: ADDRESS_ID
+            description: Clave foránea a la tabla ADDRESSES.
+            # Recomendación: Añade la prueba de relación si ya definiste dim_addresses
+            # - relationships:
+            #     to: ref('dim_addresses')
+            #     field: address_id
+              
+          - name: FIRST_NAME
+            description: Nombre de pila del usuario.
+          
+          - name: LAST_NAME
+            description: Apellido del usuario.
+            
+          - name: EMAIL
+            description: Correo electrónico del usuario (clave de contacto).
+            tests:
+              - unique # El email debería ser único
+              
+          - name: PHONE_NUMBER
+            description: Número de teléfono de contacto.
+            
+          - name: TOTAL_ORDERS
+            description: Número total de pedidos realizados por el usuario.
+            
+          - name: CREATED_AT
+            description: Marca de tiempo de la creación del usuario.
+            tests:
+              - not_null
+              
+          - name: UPDATED_AT
+            description: Marca de tiempo de la última actualización del usuario.
+
+          # Metadatos de Fivetran
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la sincronización de Fivetran.
