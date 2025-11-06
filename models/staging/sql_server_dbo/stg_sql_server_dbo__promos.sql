@@ -1,29 +1,55 @@
 WITH source_data AS (
 
     SELECT
-        -- 1. CLAVE SUBROGADA 
-        {{ dbt_utils.surrogate_key(['PROMO_ID']) }} AS promo_sk, -- Genera un hash único a partir de PROMO_ID
+        -- 1. Promociones Reales (desde la fuente)
+        MD5(COALESCE(CAST(PROMO_ID AS VARCHAR), '')) AS promo_sk,
         
-        -- 2. Clave Natural (Original)
-        PROMO_ID AS promo_id, -- Mantenemos el ID original para referencias
+        CAST(PROMO_ID AS VARCHAR) AS promo_id,
         
-        -- 3. Formato del Descuento
-        CAST(DISCOUNT AS VARCHAR) || '$' AS discount_value, -- Convierte a texto y añade el símbolo '$'
+        CAST(DISCOUNT AS float) AS discount_value_in_dollars, 
         
-        -- 4. Otros Datos
-        STATUS AS promo_status,
+        -- Campo Booleano (1/0)
+        CASE 
+            WHEN STATUS = 'active' THEN 1 
+            ELSE 0 
+        END AS esta_activo,
+        
+        STATUS AS promo_status, 
 
-        -- 5. Fechas a UTC (si el campo no tiene la zona horaria ya)
-        -- Si _FIVETRAN_SYNCED es un TIMESTAMP_TZ (con zona horaria), usamos CONVERT_TIMEZONE.
-        -- Si es TIMESTAMP sin zona, usamos TO_TIMESTAMP_NTZ. 
-        -- Asumo que es un TIMESTAMP_TZ por el nombre, por lo que lo convertimos a UTC.
-        CONVERT_TIMEZONE('UTC', _FIVETRAN_SYNCED) AS loaded_at_utc,
+        CONVERT_TIMEZONE('UTC', _FIVETRAN_SYNCED) AS loaded_at,
         
-        -- Metadatos
         _FIVETRAN_DELETED AS is_deleted
 
     FROM 
         {{ source('SQL_SERVER_DBO', 'PROMOS') }}
+
+    WHERE PROMO_ID IS NOT NULL
+
+    UNION ALL
+
+    -- 2. Fila extra para "Sin Promoción"
+    SELECT
+        -- Clave constante
+        MD5('SIN_PROMOCION') AS promo_sk, 
+        
+        -- ID de negocio
+        CAST('NO_PROMO' AS VARCHAR) AS promo_id,
+        
+        -- Valor de descuento cero (FLOAT)
+        CAST(0.00 AS float) AS discount_value_in_dollars, 
+        
+        -- Valor constante para is_active (0)
+        0 AS esta_activo,
+        
+        -- Estado por defecto (VARCHAR)
+        CAST('active' AS VARCHAR) AS promo_status, 
+
+        -- Marca de tiempo (TIMESTAMP)
+        CONVERT_TIMEZONE('UTC', CURRENT_TIMESTAMP) AS loaded_at,
+        
+        -- Bandera de eliminación (NULL)
+        CAST(NULL AS BOOLEAN) AS is_deleted 
+
 )
 
 SELECT * FROM source_data
