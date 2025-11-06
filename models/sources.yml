@@ -68,7 +68,7 @@ sources:
           - name: DISCOUNT
             description: Porcentaje o valor del descuento aplicado por la promoción.
             data_tests:
-              - not_null   # ✅ El descuento debe estar siempre presente.
+              - not_null   # El descuento debe estar siempre presente.
               # Opcional: Podrías añadir un test genérico para asegurar que el descuento no sea negativo
               # - dbt_utils.at_least_one # o un test singular si tienes reglas de negocio
 
@@ -82,3 +82,162 @@ sources:
             data_tests:
               - not_null
 
+# 4. Usuarios
+      - name: USERS
+        description: Información detallada de los usuarios o clientes.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: USER_ID
+            description: Clave primaria de negocio del usuario.
+            tests:
+              - unique
+              - not_null
+              
+          - name: ADDRESS_ID
+            description: Clave foránea a la tabla ADDRESSES.
+            # Recomendación: Añade la prueba de relación si ya definiste dim_addresses
+            # - relationships:
+            #     to: ref('dim_addresses')
+            #     field: address_id
+              
+          - name: FIRST_NAME
+            description: Nombre de pila del usuario.
+          
+          - name: LAST_NAME
+            description: Apellido del usuario.
+            
+          - name: EMAIL
+            description: Correo electrónico del usuario (clave de contacto).
+            tests:
+              - unique # El email debería ser único
+              
+          - name: PHONE_NUMBER
+            description: Número de teléfono de contacto.
+            
+          - name: TOTAL_ORDERS
+            description: Número total de pedidos realizados por el usuario.
+            
+          - name: CREATED_AT
+            description: Marca de tiempo de la creación del usuario.
+            tests:
+              - not_null
+              
+          - name: UPDATED_AT
+            description: Marca de tiempo de la última actualización del usuario.
+
+          # Metadatos de Fivetran
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la sincronización de Fivetran.
+
+      
+      # 5. Products
+      - name: PRODUCTS
+        description: Inventario y detalles de productos.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: PRODUCT_ID
+            description: Clave primaria de negocio del producto.
+            tests:
+              - unique
+              - not_null
+              
+          - name: NAME
+            description: Nombre comercial del producto.
+            
+          - name: PRICE
+            description: Precio unitario del producto.
+            
+          - name: INVENTORY
+            description: Cantidad de inventario disponible.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera de borrado suave de Fivetran.
+            
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran.
+
+
+      # 6. Orders
+      - name: ORDERS
+        description: Registros de transacciones de pedidos y sus métricas asociadas.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: ORDER_ID
+            description: Clave primaria de negocio del pedido.
+            tests:
+              - unique
+              - not_null
+              
+          - name: USER_ID
+            description: Clave foránea al usuario que realizó el pedido.
+            
+          - name: ADDRESS_ID
+            description: Clave foránea a la dirección de envío asociada al pedido.
+            
+          - name: PROMO_ID
+            description: Clave foránea a la promoción utilizada en el pedido.
+            
+          - name: SHIPPING_SERVICE
+            description: Servicio de mensajería utilizado.
+            
+          - name: SHIPPING_COST
+            description: Costo del envío.
+            
+          - name: ORDER_COST
+            description: Costo total de los productos antes de descuentos y envío.
+            
+          - name: ORDER_TOTAL
+            description: Valor final total pagado por el cliente.
+            
+          - name: TRACKING_ID
+            description: Número de seguimiento del envío.
+            
+          - name: STATUS
+            description: Estado actual del pedido (e.g., 'shipped', 'delivered').
+            
+          - name: CREATED_AT
+            description: Marca de tiempo de la creación del pedido.
+            
+          - name: ESTIMATED_DELIVERY_AT
+            description: Fecha estimada de entrega.
+            
+          - name: DELIVERED_AT
+            description: Fecha real de entrega.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera de borrado suave de Fivetran.
+            
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran.
+      
+##Events
+
+      - name: EVENTS
+        description: "Tabla de eventos de usuario web/móvil."
+        columns:
+          - name: EVENT_ID
+            tests:
+              - unique
+              - not_null
+            description: "Clave primaria natural para cada evento."
+          - name: PAGE_URL
+            description: "URL de la página donde ocurrió el evento."
+          - name: EVENT_TYPE
+            description: "Tipo de evento (ej: 'page_view', 'add_to_cart', 'checkout')."
+          - name: USER_ID
+            description: "Clave natural del usuario asociado al evento (FK a DIM_USER)."
+          - name: PRODUCT_ID
+            description: "ID del producto afectado por el evento (FK a DIM_PRODUCT)."
+          - name: SESSION_ID
+            description: "ID de la sesión de navegación del usuario (FK a DIM_SESSION)."
+          - name: CREATED_AT
+            description: "Marca de tiempo local (TIMESTAMP_NTZ) de cuando ocurrió el evento."
+          - name: ORDER_ID
+            description: "ID de la orden, si el evento es parte del proceso de compra."
+          - name: _FIVETRAN_DELETED
+            description: "Metadato de Fivetran que indica si la fila fue borrada."
+          - name: _FIVETRAN_SYNCED
+            description: "Marca de tiempo con zona horaria de la sincronización de Fivetran."
