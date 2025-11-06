@@ -1,11 +1,15 @@
 WITH source_data AS (
 
     SELECT
-        -- 1. Promociones Reales (desde la fuente)
+        -- CLAVE FORÁNEA
+
         MD5(COALESCE(CAST(PROMO_ID AS VARCHAR), '')) AS promo_sk,
         
+        -- CLAVES NATURALES
         CAST(PROMO_ID AS VARCHAR) AS promo_id,
         
+        -- ATRIBUTOS
+
         CAST(DISCOUNT AS float) AS discount_value_in_dollars, 
         
         CASE 
@@ -26,27 +30,23 @@ WITH source_data AS (
 
     UNION ALL
 
-    -- 2. Fila extra para "Sin Promoción"
+    -- AÑADIR Fila extra para "Sin Promoción"
     SELECT
         -- Clave constante
         MD5('SIN_PROMOCION') AS promo_sk, 
         
-        -- ID de negocio
         CAST('NO_PROMO' AS VARCHAR) AS promo_id,
         
-        -- Valor de descuento cero (FLOAT)
         CAST(0.00 AS float) AS discount_value_in_dollars, 
         
-        -- Valor constante para is_active (0)
         0 AS esta_activo,
         
-        -- Estado por defecto (VARCHAR)
         CAST('active' AS VARCHAR) AS promo_status, 
 
-        -- Marca de tiempo (TIMESTAMP)
+        -- TIEMPO
+
         CONVERT_TIMEZONE('UTC', CURRENT_TIMESTAMP) AS loaded_at,
         
-        -- Bandera de eliminación (NULL)
         CAST(NULL AS BOOLEAN) AS is_deleted 
 
 )

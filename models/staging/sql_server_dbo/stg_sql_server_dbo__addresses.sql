@@ -1,24 +1,32 @@
 WITH source_data AS (
 
     SELECT
-        -- Clave Primaria
-        ADDRESS_ID, 
-        
-        -- Datos de Dirección
-        ZIPCODE,
-        COUNTRY,
-        ADDRESS,
-        STATE,
+        -- Clave subrogada
 
-        _FIVETRAN_DELETED AS is_deleted, -- 2. Renombrar la bandera booleana a un nombre más intuitivo
-        _FIVETRAN_SYNCED AS loaded_at     -- 3. Renombrar la marca de tiempo a un nombre estándar
+        MD5(CAST(ADDRESS_ID AS VARCHAR)) AS address_sk,
+
+        -- Clave de negocio
+
+        CAST(ADDRESS_ID AS VARCHAR) AS address_id, 
+
+        -- Atributos de la Dirección
+
+        CAST(STATE AS VARCHAR) AS state,
+        CAST(ZIPCODE AS VARCHAR) AS zipcode,
+        CAST(COUNTRY AS VARCHAR) AS country,
+        
+        -- Metadatos de Fivetran
+        
+        CONVERT_TIMEZONE('UTC', _FIVETRAN_SYNCED) AS loaded_at,
+        _FIVETRAN_DELETED AS is_deleted
 
     FROM 
-        {{ source('SQL_SERVER_DBO', 'ADDRESSES') }} -- 4. Referencia al source definido en el YML
+        {{ source('SQL_SERVER_DBO', 'ADDRESSES') }}
+
+    WHERE ADDRESS_ID IS NOT NULL 
 
 )
 
 SELECT * FROM source_data
-
 
 
