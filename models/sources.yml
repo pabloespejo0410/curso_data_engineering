@@ -68,7 +68,7 @@ sources:
           - name: DISCOUNT
             description: Porcentaje o valor del descuento aplicado por la promoción.
             data_tests:
-              - not_null   # ✅ El descuento debe estar siempre presente.
+              - not_null   # El descuento debe estar siempre presente.
               # Opcional: Podrías añadir un test genérico para asegurar que el descuento no sea negativo
               # - dbt_utils.at_least_one # o un test singular si tienes reglas de negocio
 
@@ -129,3 +129,31 @@ sources:
           # Metadatos de Fivetran
           - name: _FIVETRAN_SYNCED
             description: Marca de tiempo de la sincronización de Fivetran.
+
+      
+      # 5. Products
+      - name: PRODUCTS
+        description: Inventario y detalles de productos.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: PRODUCT_ID
+            description: Clave primaria de negocio del producto.
+            tests:
+              - unique
+              - not_null
+              
+          - name: NAME
+            description: Nombre comercial del producto.
+            
+          - name: PRICE
+            description: Precio unitario del producto.
+            
+          - name: INVENTORY
+            description: Cantidad de inventario disponible.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera de borrado suave de Fivetran.
+            
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran.
