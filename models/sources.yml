@@ -1,0 +1,84 @@
+version: 2
+
+sources:
+  - name: SQL_SERVER_DBO 
+    # Configuración de ubicación 
+    database: ALUMNO24_DEV_BRONZE_DB 
+    schema: SQL_SERVER_DBO 
+    # Documentación y tests 
+    description: >
+      Esta es la capa BRONZE de datos extraídos del servidor SQL.
+    
+    # Configuración de freshness
+    loaded_at_field: _etl_loaded_timestamp # Campo para verificar cuándo se cargó
+    freshness:
+      warn_after: {count: 1000, period: day}
+      error_after: {count: 1000, period: day}
+      
+
+    tables:
+      - name: ADDRESSES # Nombre de la tabla
+        description: Contiene información de direcciones de origen.
+        loaded_at_field: _FIVETRAN_SYNCED # Aseguramos el campo de frescura a nivel de tabla
+
+        columns:
+          - name: ADDRESS_ID # CLAVE PRIMARIA
+            description: Identificador único de la dirección. Es la clave primaria de la tabla.
+            data_tests:
+              - unique     # Debe ser único.
+              - not_null   # No debe ser nulo (porque es Primary Key).
+              
+          - name: ZIPCODE
+            description: Código postal asociado a la dirección.
+            data_tests:
+              - not_null   # Aseguramos que el código postal esté presente.
+              
+          - name: COUNTRY
+            description: País donde se localiza la dirección.
+            
+          - name: ADDRESS
+            description: La línea principal de la dirección física.
+
+          - name: STATE
+            description: Estado o provincia de la dirección.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera booleana que indica si el registro fue eliminado en el sistema de origen.
+            data_tests:
+              - accepted_values: # Aseguramos que solo contenga TRUE o FALSE
+                  values: [True, False, null] # Permitimos null si el origen lo permite
+
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran. Esto nos va a determinar que es un delta, que trocito de la tabla es nuevo respecto a la ultima vez que cargue
+            data_tests:
+              - not_null 
+
+# PROMOS 
+      - name: PROMOS 
+        description: Contiene información de promociones y descuentos.
+        loaded_at_field: _FIVETRAN_SYNCED
+
+        columns:
+          - name: PROMO_ID 
+            description: Identificador único de la promoción.
+            data_tests:
+              - unique     # Debe ser único.
+              - not_null   # No debe ser nulo (Primary Key).
+              
+          - name: DISCOUNT
+            description: Porcentaje o valor del descuento aplicado por la promoción.
+            data_tests:
+              - not_null   # ✅ El descuento debe estar siempre presente.
+              # Opcional: Podrías añadir un test genérico para asegurar que el descuento no sea negativo
+              # - dbt_utils.at_least_one # o un test singular si tienes reglas de negocio
+
+          - name: STATUS
+              
+          - name: _FIVETRAN_DELETED
+            description: Indicador de borrado suave.
+            
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización.
+            data_tests:
+              - not_null
+
