@@ -212,3 +212,32 @@ sources:
             
           - name: _FIVETRAN_SYNCED
             description: Marca de tiempo de la última sincronización de Fivetran.
+      
+##Events
+
+      - name: EVENTS
+        description: "Tabla de eventos de usuario web/móvil."
+        columns:
+          - name: EVENT_ID
+            tests:
+              - unique
+              - not_null
+            description: "Clave primaria natural para cada evento."
+          - name: PAGE_URL
+            description: "URL de la página donde ocurrió el evento."
+          - name: EVENT_TYPE
+            description: "Tipo de evento (ej: 'page_view', 'add_to_cart', 'checkout')."
+          - name: USER_ID
+            description: "Clave natural del usuario asociado al evento (FK a DIM_USER)."
+          - name: PRODUCT_ID
+            description: "ID del producto afectado por el evento (FK a DIM_PRODUCT)."
+          - name: SESSION_ID
+            description: "ID de la sesión de navegación del usuario (FK a DIM_SESSION)."
+          - name: CREATED_AT
+            description: "Marca de tiempo local (TIMESTAMP_NTZ) de cuando ocurrió el evento."
+          - name: ORDER_ID
+            description: "ID de la orden, si el evento es parte del proceso de compra."
+          - name: _FIVETRAN_DELETED
+            description: "Metadato de Fivetran que indica si la fila fue borrada."
+          - name: _FIVETRAN_SYNCED
+            description: "Marca de tiempo con zona horaria de la sincronización de Fivetran."

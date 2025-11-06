@@ -8,7 +8,6 @@ WITH source_data AS (
         
         CAST(DISCOUNT AS float) AS discount_value_in_dollars, 
         
-        -- Campo Booleano (1/0)
         CASE 
             WHEN STATUS = 'active' THEN 1 
             ELSE 0 
