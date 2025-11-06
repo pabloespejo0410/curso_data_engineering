@@ -6,7 +6,7 @@ WITH source_data AS (
         
         -- Atributos del Producto
         CAST(NAME AS VARCHAR) AS product_name,
-        CAST(PRICE AS FLOAT) AS unit_price,
+        CAST(PRICE AS FLOAT) AS unit_price_in_dollars,
         CAST(INVENTORY AS NUMERIC(38, 0)) AS inventory_quantity, 
         
         -- Metadatos de Fivetran

@@ -157,3 +157,58 @@ sources:
             
           - name: _FIVETRAN_SYNCED
             description: Marca de tiempo de la última sincronización de Fivetran.
+
+
+      # 6. Orders
+      - name: ORDERS
+        description: Registros de transacciones de pedidos y sus métricas asociadas.
+        loaded_at_field: "_FIVETRAN_SYNCED"
+        
+        columns:
+          - name: ORDER_ID
+            description: Clave primaria de negocio del pedido.
+            tests:
+              - unique
+              - not_null
+              
+          - name: USER_ID
+            description: Clave foránea al usuario que realizó el pedido.
+            
+          - name: ADDRESS_ID
+            description: Clave foránea a la dirección de envío asociada al pedido.
+            
+          - name: PROMO_ID
+            description: Clave foránea a la promoción utilizada en el pedido.
+            
+          - name: SHIPPING_SERVICE
+            description: Servicio de mensajería utilizado.
+            
+          - name: SHIPPING_COST
+            description: Costo del envío.
+            
+          - name: ORDER_COST
+            description: Costo total de los productos antes de descuentos y envío.
+            
+          - name: ORDER_TOTAL
+            description: Valor final total pagado por el cliente.
+            
+          - name: TRACKING_ID
+            description: Número de seguimiento del envío.
+            
+          - name: STATUS
+            description: Estado actual del pedido (e.g., 'shipped', 'delivered').
+            
+          - name: CREATED_AT
+            description: Marca de tiempo de la creación del pedido.
+            
+          - name: ESTIMATED_DELIVERY_AT
+            description: Fecha estimada de entrega.
+            
+          - name: DELIVERED_AT
+            description: Fecha real de entrega.
+            
+          - name: _FIVETRAN_DELETED
+            description: Bandera de borrado suave de Fivetran.
+            
+          - name: _FIVETRAN_SYNCED
+            description: Marca de tiempo de la última sincronización de Fivetran.
