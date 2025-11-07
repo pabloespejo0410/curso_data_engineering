@@ -9,7 +9,7 @@ WITH source_data AS (
         
         -- CLAVE FORÁNEA
 
-        CAST(ADDRESS_ID AS VARCHAR) AS address_fk,
+        MD5(CAST(ADDRESS_ID AS VARCHAR)) AS address_sk,
         
         -- ATRIBUTOS
 

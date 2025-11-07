@@ -3,17 +3,18 @@
 WITH source_data AS (
 
     SELECT
-        -- CLAVE SUBROGADA 
 
-        MD5(COALESCE(EVENT_ID, '')) AS event_sk,
-        
-        -- CLAVES NATURALES PARA FK
+        -- CLAVE PRIMARIA SUBROGADA
 
+        MD5(CAST(EVENT_ID AS VARCHAR)) AS event_sk,
         CAST(EVENT_ID AS VARCHAR) AS event_id,
-        CAST(USER_ID AS VARCHAR) AS user_id,
-        CAST(PRODUCT_ID AS VARCHAR) AS product_id, 
+
+        -- CLAVES FORÁNEAS SUBROGADAS
+
+        MD5(CAST(USER_ID AS VARCHAR)) AS user_sk,
+        MD5(CAST(PRODUCT_ID AS VARCHAR)) AS product_sk, 
         CAST(SESSION_ID AS VARCHAR) AS session_id,
-        CAST(ORDER_ID AS VARCHAR) AS order_id,
+        MD5(CAST(ORDER_ID AS VARCHAR)) AS order_sk,
         
         -- ATRIBUTOS DE EVENTO
 

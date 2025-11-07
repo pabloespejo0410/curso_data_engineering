@@ -1,19 +1,16 @@
 WITH source_data AS (
 
     SELECT
-        -- ClAVE SUBROGADA
+        -- ClAVE SUBROGADA PRIMARIA
 
         MD5(CAST(ORDER_ID AS VARCHAR)) AS order_sk,
-        
-        -- CLAVE DE NEGOCIO 
-
         CAST(ORDER_ID AS VARCHAR) AS order_id,
         
         -- CLAVES FORÁNEAS
 
-        CAST(ADDRESS_ID AS VARCHAR) AS address_fk,
-        CAST(PROMO_ID AS VARCHAR) AS promo_fk,
-        CAST(USER_ID AS VARCHAR) AS user_fk,
+        CAST(ADDRESS_ID AS VARCHAR) AS address_sk,
+        CAST(PROMO_ID AS VARCHAR) AS promo_sk,
+        CAST(USER_ID AS VARCHAR) AS user_sk,
         
         -- MÉTRICAS
 
